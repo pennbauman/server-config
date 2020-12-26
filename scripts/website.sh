@@ -15,8 +15,13 @@ cp scripts/sites.py $loc/sites.py
 cp sites.json $loc/sites.json
 
 chown -R website /var/website
+chown -R website $loc
 
 sudo -u website bash /var/website/config_ssh.sh
-sudo -u website python $loc/sites.py
+sudo -u website python $loc/sites.py clone
+sudo -u website python $loc/sites.py build
+
+bash scripts/cp.sh $loc/cp.txt
+
 
 rm -f /var/website/config_*.sh

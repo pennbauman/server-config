@@ -3,6 +3,8 @@
 
 hostname server
 
+python -m pip install toml
+
 bash scripts/penn.sh
 bash scripts/website.sh
 
