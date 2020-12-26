@@ -1,0 +1,14 @@
+{
+	"pennbauman" : {
+		"url" : "pennbauman.com",
+		"remote" : "git@github.com:pennbauman/pennbauman.com.git",
+		"kind" : "tide",
+
+		"live" : "master",
+		"branch_subdomain" : {
+			"dev" : "dev",
+			"flask" : "flask",
+			"tide" : "tide"
+		}
+	}
+}
