@@ -1,0 +1,15 @@
+[Unit]
+Description={{ s.url }}
+After=network.target
+
+[Service]
+Type=simple
+User=website
+Group=website
+Environment="TIDE_DIR={{ s.loc }}"
+Environment="TIDE_ADDR=localhost"
+Environment="TIDE_PORT={{ s.port }}"
+ExecStart=/usr/bin/{{ s.url }}
+
+[Install]
+WantedBy=multi-user.target

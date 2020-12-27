@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Setup websites
 import json, os, sys, subprocess
-#from jinja2 import Template
+from jinja2 import Template
 import toml
 
 LOC="/var/website/temp"
@@ -13,6 +13,14 @@ def sh(cmd):
         print("sh: error '%s'" % cmd)
         print(c.stderr.decode("utf-8"))
         sys.exit(1)
+
+def cp(source, target):
+    try:
+        f = open(LOC + "/cp.txt", "a")
+    except:
+        f = open(LOC + "/cp.txt", "x")
+    f.write(source + " " + target + "\n")
+    f.close()
 
 class Port():
     p = {
@@ -30,7 +38,7 @@ class Site:
     remote = ""
     kind = ""
     port = 0
-    branch_subdomain = {}
+    branches = {}
 
     def __init__(self, loc, url, remote, kind, port, bs={}):
         self.loc = loc
@@ -38,70 +46,83 @@ class Site:
         self.remote = remote
         self.kind = kind
         self.port = port
-        self.branch_subdomain = bs
+        self.branches = bs
 
     def add_branch(self, branch, subdomain):
         if subdomain == "prod":
             url = self.url
         else:
             url = subdomain + "." + self.url
-        self.branch_subdomain[branch] = Site(
+        self.branches[branch] = Site(
                 loc = self.loc + "/" + subdomain,
                 url = url,
                 remote = self.remote + ":" + branch,
                 kind = self.kind,
-                port = self.port + len(self.branch_subdomain) + 1,
+                port = self.port + len(self.branches),
                 bs = None,
             )
 
-    def clone(self):
-        sh("mkdir -p %s" % self.loc)
-        os.chdir(self.loc)
-        for branch in self.branch_subdomain:
-            self.clone_branch(branch, self.branch_subdomain[branch].loc)
-
-    def clone_branch(self, branch, loc):
-        if os.path.isdir(loc):
-            os.chdir(loc)
-            sh("git checkout %s" % branch)
-            sh("git pull")
+    def clone(self, branch = ""):
+        if self.branches == None:
+            if os.path.isdir(self.loc):
+                os.chdir(self.loc)
+                sh("git checkout %s" % branch)
+                sh("git pull")
+            else:
+                sh("git clone %s %s --branch %s" % (self.remote, self.loc, branch))
         else:
-            sh("git clone %s %s --branch %s" % (self.remote, loc, branch))
+            sh("mkdir -p %s" % self.loc)
+            os.chdir(self.loc)
+            for b, s in self.branches.items():
+                s.clone(b)
 
 
     def build(self):
-        for branch in self.branch_subdomain:
-            self.build_branch(self.branch_subdomain[branch].loc, self.branch_subdomain[branch].url)
-
-    def build_branch(self, loc, url):
-        if self.kind == "tide":
-            os.chdir(loc)
-            with open(loc + "/Cargo.toml") as f:
-                data = toml.load(f)
-            print("rust build ... ", end="")
-            sh("cargo build --release")
-            print("done")
-
-            try:
-                f = open(LOC + "/cp.txt", "a")
-            except:
-                f = open(LOC + "/cp.txt", "x")
-            f.write("target/release/" + data["package"]["name"] + " /bin/" + url)
-            f.close()
+        if self.branches == None:
+            if self.kind == "tide":
+                os.chdir(self.loc)
+                with open(self.loc + "/Cargo.toml") as f:
+                    data = toml.load(f)
+                print("rust build ... ", end="")
+                sh("cargo build --release")
+                print("done")
+                cp(self.loc + "/target/release/" + data["package"]["name"], "/bin/" + self.url)
+            else:
+                raise Exception("Unknown site type")
         else:
-            raise Exception("Unknown site type")
+            for branch in self.branches.values():
+                branch.build()
 
 
     def systemd(self):
-        os.makedirs(BASE_DIR + "/output~", exist_ok=True)
-        template = Template(open(BASE_DIR + "/templates/systemd.service").read())
-        template.render(s = self)
-        try:
-            f = open(BASE_DIR + "/output~/" + self.url, "w")
-        except:
-            f = open(BASE_DIR + "/output~/" + self.url, "x")
-        f.write(str(template))
-        f.close()
+        os.makedirs(LOC + "/.systemd", exist_ok=True)
+        if self.branches == None:
+            template = Template(open(BASE_DIR + "/.templates/systemd.service").read())
+            try:
+                f = open(LOC + "/.systemd/" + self.url, "w")
+            except:
+                f = open(BASE_DIR + "/.systemd/" + self.url, "x")
+            f.write(str(template.render(s = self)))
+            f.close()
+            cp(BASE_DIR + "/.systemd/" + self.url, "/etc/systemd/system/" + self.url + ".service")
+        else:
+            for branch in self.branches.values():
+                branch.systemd()
+
+    def nginx(self):
+        os.makedirs(LOC + "/.nginx", exist_ok=True)
+        if self.branches == None:
+            template = Template(open(BASE_DIR + "/.templates/nginx.conf").read())
+            try:
+                f = open(LOC + "/.nginx/" + self.url, "w")
+            except:
+                f = open(BASE_DIR + "/.nginx/" + self.url, "x")
+            f.write(str(template.render(s = self)))
+            f.close()
+            cp(BASE_DIR + "/.nginx/" + self.url, "/etc/nginx/conf.d/" + self.url + ".conf")
+        else:
+            for branch in self.branches.values():
+                branch.nginx()
 
 
 with open(LOC + "/sites.json") as f:
@@ -130,5 +151,8 @@ for s in sites:
         s.clone()
     elif sys.argv[1] == "build":
         s.build()
-    #s.systemd()
+    elif sys.argv[1] == "systemd":
+        s.systemd()
+    elif sys.argv[1] == "nginx":
+        s.nginx()
 
