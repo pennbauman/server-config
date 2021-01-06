@@ -1,0 +1,9 @@
+# setup ssh
+bash $HOME/.config_ssh.sh
+
+# get config
+git clone git@github.com:pennbauman/dotfiles.git $HOME/.dotfiles
+cd $HOME/.dotfiles
+bash $HOME/.dotfiles/server/setup.sh
+
+rm -f /home/penn/.config_*.sh
