@@ -1,0 +1,4 @@
+export TIDE_DIR=$(pwd)
+export TIDE_ADDR=0.0.0.0
+export TIDE_PORT=8070
+export PENNBAUMAN_COM=$(pwd)/test

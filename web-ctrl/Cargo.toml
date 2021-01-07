@@ -1,0 +1,10 @@
+[package]
+name = "web-ctrl"
+version = "0.1.0"
+authors = ["Penn Bauman <pennbauman@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+tide = "0.15.0"
+async-std = { version = "1.6.0", features = ["attributes"] }
+serde_json = "1.0"
