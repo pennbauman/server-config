@@ -1,0 +1,56 @@
+<!DOCTYPE html><html>
+	<head>
+		<title><!--#echo var="status" default="000" --> <!--#echo var="status_text" default="Error" --></title>
+		<link rel='icon' href='/error/favicon.png'>
+		<meta charset='UTF-8'/>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<style>
+			body {
+				width:60rem;
+				max-width:90vw;
+				margin:auto;
+				padding:4rem 0;
+				background:#000000;
+				font-family:Courier New, Monospace;
+				text-align:center;
+			}
+			h1 {
+				margin-bottom:0;
+				color:#bb0000;
+				font-weight:bold;
+				font-size:2rem;
+			}
+			b {
+				margin-top:0;
+				margin-bottom:2rem;
+				color:#ffbb00;
+				font-size:1rem;
+			}
+			p {
+				margin:0.2rem 0 1rem;
+				color:#ffffff;
+			}
+			i {
+				font-weight:bold;
+				color:#bbbbbb;
+			}
+			a { color:inherit }
+			a:hover { color:#ffbb00 }
+		</style>
+	</head>
+	<body>
+		<h1>Error
+			<!--#echo var="status" default="000" -->
+		</h1>
+		<p>
+			<i><!--#echo var="HTTP_HOST" --><!--#echo var="REQUEST_URI" --></i>:
+			<b><!--#echo var="status_text" default="" --></b>
+		</p>
+		<p>
+			<a href="/">Home</a>
+			-
+			<a href="mailto:pennbauman@protonmail.com">Contact</a>
+		</p>
+	</body>
+</html>
+

@@ -1,0 +1,14 @@
+[
+	{
+		"dir":"main",
+		"branch":"master",
+		"url":"pennbauman.com, www.pennbauman.com",
+		"port": 8180
+	},
+	{
+		"dir":"tide",
+		"branch":"tide",
+		"url":"tide.pennbauman.com",
+		"port": 8180
+	}
+]

@@ -16,3 +16,13 @@ bash $loc/user/website/user.sh
 
 # setup nginx
 cp $loc/configs/nginx.conf /etc/nginx/nginx.conf
+cp -rT $loc/configs/nginx-errors /etc/nginx/errors
+
+# install mongodb
+cp $loc/configs/mongodb.repo /etc/yum.repos.d/mongodb.repo
+dnf install -y mongodb-org
+systemctl enable mongod
+systemctl start mongod
+
+# setup pennbauman.com
+bash $loc/pennbauman-com/install.sh
