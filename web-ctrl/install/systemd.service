@@ -1,0 +1,16 @@
+[Unit]
+Description=server.pennbauman.com
+After=network.target
+
+[Service]
+Type=simple
+User=website
+Group=website
+Environment="TIDE_DIR=/var/website"
+Environment="TIDE_ADDR=localhost"
+Environment="TIDE_PORT=8070"
+Environment="PENNBAUMAN_COM=/var/website/pennbauman-com"
+ExecStart=/usr/bin/server.pennbauman.com
+
+[Install]
+WantedBy=multi-user.target

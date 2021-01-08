@@ -4,6 +4,7 @@
 remote=https://github.com/pennbauman/pennbauman.com.git
 loc=/var/website/pennbauman-com
 file=$loc/site.json
+log=$loc/log
 
 mkdir -p $loc
 chown -R website $loc
@@ -67,9 +68,11 @@ if (( $# > 0 )); then
 	#echo $id
 	if [[ $id == none ]]; then
 		echo "unknown branch"
+		echo "[$(date +%Y-%m-%d_%H:%M:%S)] unknown branch '$1'" >> $log
 		exit 1
 	fi
 
+	echo "[$(date +%Y-%m-%d_%H:%M:%S)] updated '$1'" >> $log
 	update $id
 	build $id
 	reload $id
@@ -83,6 +86,8 @@ else
 		update $i
 		build $i
 		reload $i
+
+		echo "[$(date +%Y-%m-%d_%H:%M:%S)] updated all" >> $log
 
 		i=$(($i + 1))
 		if [[ $(jq ".[$i]" $file) == "null" ]]; then

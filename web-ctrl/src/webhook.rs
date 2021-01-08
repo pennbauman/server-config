@@ -10,8 +10,7 @@ use crate::config;
 pub async fn routes(app: &mut tide::Server<()>) {
     app.at("/pennbauman-com/webhook").post(|mut req: Request<()>| async move {
         let body: Value = req.body_json().await?;
-        //if body["repository"]["name"] != "pennbauman-com" {
-        if body["repository"]["name"] != "test" {
+        if body["repository"]["name"] != "pennbauman.com" {
             return Ok(Response::new(406));
         }
         let full_ref = match body["ref"].as_str() {
@@ -25,13 +24,15 @@ pub async fn routes(app: &mut tide::Server<()>) {
 
         let mut script = config::pennbauman_dir().await?;
         script.push_str("/control.sh");
+
         let mut update = Command::new("bash");
-        update.arg(script)
-            .arg(branch);
-        let result = update.output().expect("failed to execute process");
-        if ! result.status.success() {
-            return Ok(Response::new(417));
-        }
+        update.arg(script).arg(branch).arg("&");
+        update.spawn();
+
+        //let result = update.output().expect("failed to execute process");
+        //if ! result.status.success() {
+            //return Ok(Response::new(417));
+        //}
 
         Ok(Response::new(200))
     });
