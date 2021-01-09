@@ -1571,6 +1571,7 @@ version = "0.1.0"
 dependencies = [
  "async-std",
  "serde_json",
+ "sha2",
  "tide",
 ]
 
