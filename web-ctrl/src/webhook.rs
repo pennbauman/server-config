@@ -19,7 +19,7 @@ pub async fn routes(app: &mut tide::Server<()>) {
             None => return Ok(Response::new(406)),
         };
         // calculate own hash
-        let secret = String::from("KG4tXyewSXAP8H8fC6tTMnQ8uaNxyjo8");
+        let secret = config::github_secret("pennbauman-com").await?;
         let mut body_hash: Hmac<Sha256> = match Hmac::new_varkey(secret.as_bytes()) {
             Ok(hmac) => hmac,
             Err(_) => return Ok(Response::new(500)),
