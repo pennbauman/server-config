@@ -3,7 +3,7 @@
 
 curl http://localhost:8070/pennbauman-com/webhook \
 	--header "Content-Type: application/json" \
-	--header "X-Hub-Signature-256: sha256=31a1c2ba184720c70f6c6f0f1fc896d9ca22fe71e614677f71aaa2371dd0edd3" \
+	--header "X-Hub-Signature-256: sha256=a763b988a6148ddf2d9e80f604ff2a05e5d8bb011c04c4bca82bccf49aae55d0" \
 	--request POST \
 	--data '{
   "ref": "refs/heads/tide",

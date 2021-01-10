@@ -1570,6 +1570,7 @@ name = "web-ctrl"
 version = "0.1.0"
 dependencies = [
  "async-std",
+ "hmac 0.10.1",
  "serde_json",
  "sha2",
  "tide",

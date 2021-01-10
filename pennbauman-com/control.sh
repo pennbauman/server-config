@@ -42,7 +42,7 @@ update () {
 	if [[ -d $loc/$(json $1 dir) ]]; then
 		cd $loc/$(json $1 dir)
 		git checkout $(json $1 branch)
-		git pull
+		git pull --ff-only
 	else
 		git clone "$remote" $loc/$(json $1 dir) --branch $(json $1 branch)
 	fi
