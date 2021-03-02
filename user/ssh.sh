@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Setup ssh
 
 if [ ! -f $HOME/.ssh/id_rsa ]; then
